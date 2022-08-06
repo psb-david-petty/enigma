@@ -1,10 +1,5 @@
-use context essentials2021
-# https://cryptii.com/pipes/enigma-machine
-# https://www.101computing.net/enigma-machine-emulator/
-# https://en.wikipedia.org/wiki/Enigma_rotor_details
-# https://cryptocellar.org/enigma/wiring-catalog/enigma_rotor_catalog_full.pdf
 #
-# German Steckered Enigma
+# German Steckered Enigma: https://psb-david-petty.github.io/enigma
 #
 
 include string-dict
@@ -16,35 +11,41 @@ GETTYSBURG = ```
 
 examples:
   # Enigma test examples for development and debugging.
-  enigma([list: i, ii, iii], ukw-b, 'aaa', 'AAA', plugboard(empty))
+  enigma([list: i, ii, iii], ukw-b, 'AAA', plugboard(empty), 'aaa')
     .encode('AAAA') is 'BDZG'
-  enigma([list: i, ii, iii], ukw-b, 'qev', 'AAA', plugboard(empty))
+  enigma([list: i, ii, iii], ukw-b, 'AAA', plugboard(empty), 'qev')
     .encode('HELLO') is 'ZJQYJ'
-  enigma([list: i, ii, iii], ukw-b, 'adu', 'AAA', plugboard(empty))
+  enigma([list: i, ii, iii], ukw-b, 'AAA', plugboard(empty), 'adu')
     .encode('ENIGMA') is 'AOAQAG'
-  enigma([list: i, ii, iii], ukw-b, 'aaa', 'AAB', plugboard(empty))
+  enigma([list: i, ii, iii], ukw-b, 'AAB', plugboard(empty), 'aaa')
     .encode('AAAAA') is 'UBDZG'
-  enigma([list: i, ii, iii], ukw-b, 'aaa', 'AAA', plugboard(empty))
+  enigma([list: i, ii, iii], ukw-b, 'AAA', plugboard(empty), 'aaa')
     .encode(clean(GETTYSBURG)) is clean(```
              eifub mmtwt eujbl nmcob piqrr vcxsx anrbp omfgp knzlh ezdhg cqyng ywxyq uibxt nbsel fznau dbjwy ydwak tyqkr irbqp ajpef dnfel ycfvp tqicl zpgjs iniph vhsog nlwmd gknig hmp```)
-  enigma([list: i, ii, iii], ukw-b, 'aaa', 'mmm', plugboard(empty))
+  enigma([list: i, ii, iii], ukw-b, 'mmm', plugboard(empty), 'aaa')
     .encode(clean(GETTYSBURG)) is clean(```
              uuefw rhcyh ujgzi nxzlu ivqih xrhvl jeyfc nmwzw xfcdu wwyup qxhji xabhv jbcgj zylfc wcxbo mfyyf cncbr ctgok yfkqq kdwhd dbkdf psqup ddgzf qmicr eehwr evvmx qmgtf laiho nts```)
-  enigma([list: i, ii, iii], ukw-b, 'aaa', 'aaa', plugboard([list: 'he', 'lp', ]))
+  enigma([list: v, vi, vii], ukw-b, 'mmm', plugboard([list: 'he', 'lp', ]), 'xyz')
     .encode(clean(GETTYSBURG)) is clean(```
-             hifub mmttt hujxp gmcjb liqrr vcxsx aynbl omfgl wnzpe hndeg zqyng ywxyu uibxr nbshp fznau dqjwj ydwok tvqkr irbqr ajlhf fnfhp pvdvl eqicp zlgjp inipw vhsog kpwcd gvnog emp```)
+             giacb oyeuk lnoju riiir tgzjz talth ieihk vzwlk tizri bmxks zptfz mdswa jbvlm udmbp ggewu fszom amsmp lupbw mtwrx svaxl njbvq czzdv bpqnu wsrzi iutyi pzooq bkvtw naaxd vis```)
 end
 
 data Enigma:
-  | enigma(rotors :: List<Rotor>, reflector :: Reflector, settings :: String, rings :: String, plugboard :: Plugboard) with:
+  | enigma(rotors :: List<Rotor>, reflector :: Reflector, rings :: String, plugboard :: Plugboard, initial :: String) with:
+    # rotors - the names and orders of the rotors
+    # reflector - the name of the reflector
+    # rings - the settings of the rings - a string of English letters
+    # plugboard - the letter pairs to swap
+    # initial - the current settings of the rotors - a string of English letters
     method encode-letter(self, letter, stepped):
+      doc: 'encode letter based on setup and stepped rotor settings'
       s-l = string-length
+      s = string-split-all(string-to-upper(stepped), '')
       r = string-split-all(self.rings, '')
-      if not(self.rotors.length() == s-l(self.settings))
-        or not(s-l(self.settings) == s-l(self.rings)):
-        raise('rotors, settings, rings must have same length')
+      if not(self.rotors.length() == s-l(self.rings))
+        or not(s-l(self.rings) == s-l(self.initial)):
+        raise('rotors, rings, settings must have same length')
       else:
-        s = string-split-all(stepped, '')
         fun fr(e, a):
           doc: 'from-right foldr function where e is index and a is letter'
           from-right(a, self.rotors.get(e), s.get(e), r.get(e))
@@ -53,19 +54,20 @@ data Enigma:
           doc: 'from-left foldl function where e is index and a is letter'
           from-left(a, self.rotors.get(e), s.get(e), r.get(e))
         end
-        right = range(0, s.length()).foldr(fr, self.plugboard.swap(letter))
+        right = range(0, r.length()).foldr(fr, self.plugboard.swap(letter))
         middle = from-reflector(right, self.reflector)
-        left = range(0, s.length()).foldl(fl, middle)
+        left = range(0, r.length()).foldl(fl, middle)
         self.plugboard.swap(left)
       end
     end,
     method encode(self, string):
+      doc: 'encode letters of string based on setup'
       for map2(
           letter from string-split-all(string, ''), 
           index from range(0, string-length(string))):
         # TODO: not functional
         block:
-          var stepped = string-to-upper(self.settings)
+          var stepped = string-to-upper(self.initial)
           for each(n from range(0, index + 1)):
             stepped := step-rotors(self.rotors, stepped)
           end
@@ -77,12 +79,6 @@ data Enigma:
 end
 
 ################### Data Types ###################
-
-# rotors - the names and orders of the rotors
-# reflector - the name of the reflector
-# settings - the current settings of the rotors - a string of English letters
-# rings - the settings of the rings - a string of English letters
-# plugboard - the letter pairs to swap
 
 data Rotor:
   | i with:
@@ -103,7 +99,11 @@ data Rotor:
     method name(self): "VIII" end,
 sharing:
   method alpha(self): get-rotor(self.name()) end,
-  method notch(self): get-notch(self.name()) end,
+  method is-notch(self, letter):
+    for any(notch from string-split-all(get-notch(self.name()), '')):
+      string-to-upper(letter) == notch
+    end
+  end,
 where:
   i satisfies is-Rotor
   ii satisfies is-Rotor
@@ -123,22 +123,37 @@ where:
   viii satisfies is-viii
   i.name() is 'I'
   i.alpha() is 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'
-  i.notch() is 'Q'
+  i.is-notch('Q') is true
+  i.is-notch('A') is false
   ii.name() is 'II'
   ii.alpha() is 'AJDKSIRUXBLHWTMCQGZNPYFVOE'
-  ii.notch() is 'E'
+  ii.is-notch('e') is true
+  ii.is-notch('a') is false
   iii.name() is 'III'
   iii.alpha() is 'BDFHJLCPRTXVZNYEIWGAKMUSQO'
-  iii.notch() is 'V'
+  iii.is-notch('V') is true
+  iii.is-notch('A') is false
   iv.name() is 'IV'
   iv.alpha() is 'ESOVPZJAYQUIRHXLNFTGKDCMWB'
-  iv.notch() is 'J'
   v.name() is 'V'
   v.alpha() is 'VZBRGITYUPSDNHLXAWMJQOFECK'
-  v.notch() is 'Z'
+  v.is-notch('z') is true
+  v.is-notch('a') is false
   vi.name() is 'VI'
   vi.alpha() is 'JPGVOUMFYQBENHZRDKASXLICTW'
-  vi.notch() is 'Z'
+  vi.is-notch('M') is true
+  vi.is-notch('Z') is true
+  vi.is-notch('A') is false
+  vii.name() is 'VII'
+  vii.alpha() is 'NZJHGRCXMYSWBOUFAIVLPEKQDT'
+  vii.is-notch('m') is true
+  vii.is-notch('z') is true
+  vii.is-notch('a') is false
+  viii.name() is 'VIII'
+  viii.alpha() is 'FKQHTLXOCBJSPDZRAMEWNIUYGV'
+  viii.is-notch('M') is true
+  viii.is-notch('Z') is true
+  viii.is-notch('A') is false
 end
 
 data Reflector:
@@ -197,9 +212,9 @@ fun get-notch(rotor):
     'III',  'V',
     'IV',   'J',
     'V',    'Z',
-    'VI',   'Z',
-    'VII',  'Z',
-    'VIII', 'Z',
+    'VI',   'MZ',
+    'VII',  'MZ',
+    'VIII', 'MZ',
   ]
   notches.get-value(string-to-upper(rotor))
 where:
@@ -208,9 +223,9 @@ where:
   get-notch('III')  is 'V'
   get-notch('iv')   is 'J'
   get-notch('V')    is 'Z'
-  get-notch('vi')   is 'Z'
-  get-notch('VII')  is 'Z'
-  get-notch('viii') is 'Z'
+  get-notch('vi')   is 'MZ'
+  get-notch('VII')  is 'MZ'
+  get-notch('viii') is 'MZ'
 end
 
 fun get-reflector(reflector):
@@ -230,6 +245,7 @@ end
 data Plugboard:
   | plugboard(pairs :: List<String>) with:
     method swap(self, letter):
+      doc: 'return swapped letter, if exists in any of pairs, otherwise letter'
       l = string-to-upper(letter)
       pair = for filter(p from validated-plugboard-list(self.pairs)):
         (l == p.first) or (l == p.last())
@@ -278,41 +294,37 @@ end
 
 #################### Utilities ###################
 
-fun clean(string):
-  doc: 'return string with only upper-case English letters.'
+fun clean(string :: String) -> String:
+  doc: 'return string with only uppercase English letters'
   for map(letter from string-split-all(string-to-upper(string), '')):
     if string-index-of(ENGLISH, letter) < 0: '' else: letter end
-  end.join-str('')
+  end
+    .join-str('')
 end
 
 fun step-rotors(rotors :: List<Rotor>, settings :: String) -> String:
-  doc: ''
+  doc: 'return rotor setting stepped by one position'
   block:
-    s-l-s = string-length(settings)
+    r-l = rotors.length()
     s = string-split-all(string-to-upper(settings), '')
-    n = for map(rotor from rotors): rotor.notch() end
-    increments = for map(index from range(0, s-l-s)):
-      if index == 0: 1
-      else:
-        # index on [1, s-l-s - 1].
-        this-setting = s.get(s-l-s - index - 1)
-        this-notch = n.get(s-l-s - index - 1)
-        prev-setting = s.get(s-l-s - index)
-        prev-notch = n.get(s-l-s - index)
-        # Manage double stepping, either this notch or the previous notch.
-        if (this-setting == this-notch) or (prev-setting == prev-notch): 1
-        else: 0
+    for map3(index from range(0, r-l), rotor from rotors, setting from s):
+      block:
+        # print(join-str([list: rotor.notch(), setting, index, ], ' '))
+
+        # The Steckered Enigma M3 & M4 exhibits 'double stepping' behavior
+        # - the rightmost rotor always steps
+        # - the current rotor steps when the setting equals the notch
+        # - OR the current rotor steps when the rotor to its right steps
+        if (index == (r-l - 1)) or rotor.is-notch(setting)
+          or rotors.get(index + 1).is-notch(s.get(index + 1)):
+          get-letter(
+            num-modulo(get-index(setting) + 1, string-length(ENGLISH)))
+        else:
+          setting
         end
       end
-    end.reverse()
-    printed =
-      for map2(setting from s, increment from increments):
-        get-letter(
-          num-modulo(get-index(setting) + increment, string-length(ENGLISH)))
-      end
+    end
       .join-str('')
-    # print(join-str([list: increments, settings, printed, ], ' '))
-    printed
   end
 where:
   r123 = [list: i, ii, iii]
