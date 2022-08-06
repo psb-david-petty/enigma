@@ -7,8 +7,19 @@ include string-dict
 
 ENGLISH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 GETTYSBURG = ```
-             Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.
-             ```
+             Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.```
+ARGUMENT = ```
+           M: I came here for a good argument!
+           O: AH, no you didn't, you came here for an argument!
+           M: An argument isn't just contradiction.
+           O: Well! it CAN be!
+           M: No it can't! An argument is a connected series of statements intended to establish a proposition.
+           O: No it isn't!
+           M: Yes it is! 'tisn't just contradiction.
+           O: Look, if I *argue* with you, I must take up a contrary position!
+           M: Yes but it isn't just saying 'no it isn't'.
+           O: Yes it is!
+           M: No it ISN'T! Argument is an intellectual process. Contradiction is just the automatic gainsaying of anything the other person says.```
 
 examples:
   # Enigma test examples for development and debugging.
@@ -29,6 +40,9 @@ examples:
   enigma([list: v, vi, vii], ukw-b, 'mmm', plugboard([list: 'he', 'lp', ]), 'xyz')
     .encode(clean(GETTYSBURG)) is clean(```
              giacb oyeuk lnoju riiir tgzjz talth ieihk vzwlk tizri bmxks zptfz mdswa jbvlm udmbp ggewu fszom amsmp lupbw mtwrx svaxl njbvq czzdv bpqnu wsrzi iutyi pzooq bkvtw naaxd vis```)
+  enigma([list: vi, vii, viii], ukw-b, 'xyz', plugboard([list: 'mo', 'nt', 'yp', ]), 'pqr')
+    .encode(clean(ARGUMENT)) is clean(```
+             vjkpq adksp nbwua phbsa bxdph qcpcs imlfp vwyyh svvbl xprfi ccjld wsqtb ggpxv oldpy oqdbm rzwvk wdtqp nqvkz nvyvq wijmd cgwms maxmr fzusf uuwms wqfuv njqmz pllpi gurig zayde thaka wajvr wxrwa wuryv rjgod qidkz zayyr jodke ceyci hcntv bwuqm hhpho epqvb vznik akyon mzurt jcpht wgytv mvvfy npioz koord ewzly ikhdn elweo ptgbw zvfyn igmab aefdc enenl ezmmx tlkpu ortgy rcbmm wfoso mucve qprdl ickrr vjpbl emzae cqkis vsenq ftqwg lyohx ppqxv bgxne pqqeg fvsle lizvr zykmk tyxcb kzdcx fekbr ubnjp rerin fzcyu pd```)
 end
 
 data Enigma:
