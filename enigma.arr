@@ -320,7 +320,7 @@ end
 
 fun clean(string :: String) -> String:
   doc: 'return string with only uppercase English letters'
-  clean(string).join-str('')
+  clean-list(string).join-str('')
 end
 
 fun step-rotors(rotors :: List<Rotor>, settings :: String) -> String:
