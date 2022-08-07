@@ -32,7 +32,7 @@ This is an exercise in [Pyret](http://pyret.org/) used to explore [functional pr
 
 - The [M3 Enigma Machine](https://www.cryptomuseum.com/crypto/enigma/m3/) features ['double stepping'](https://www.cryptomuseum.com/people/hamer/files/double_stepping.pdf) of the rotors. Consequently, a rotor will step when the rotor to its right's setting matches its notch *or* when its own setting matches its notch. (The rightmost rotor always steps.)
 - Rotors `vi`, `vii`, and `viii` have *two* notch positions, so `is-notch` had to be added to look for either notch.
-- The `from-left` function needs an inverted alphabet. `invert-alphabet` uses an $\mathcal{O}\left( n^{2} \right)$ algorithm to repeatedly find corresponding letters. Using a `string-dict` could make it $\mathcal{O}\left( n \right)$.
+- The `from-left` function needs an inverted alphabet. `invert-alphabet` uses an ![order n squared](https://latex.codecogs.com/png.latex?\dpi{100}\mathcal{O}\left(n^{2}\right)) algorithm to repeatedly find corresponding letters. Using a `string-dict` could make it ![order n](https://latex.codecogs.com/png.latex?\dpi{100}\mathcal{O}\left(n\right)).
 
 ## Links
 
