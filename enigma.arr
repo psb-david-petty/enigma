@@ -4,8 +4,10 @@ use context essentials2021
 #
 
 include string-dict
+import sets as SETS
 
 ENGLISH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+ENGLISH-SET = SETS.list-to-tree-set(string-split-all(ENGLISH, ''))
 GETTYSBURG = ```
              Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.```
 ARGUMENT = ```
@@ -69,9 +71,9 @@ data Enigma:
           doc: 'from-left foldl function where e is index and a is letter'
           from-left(a, self.rotors.get(e), s.get(e), r.get(e))
         end
-        right = range(0, r.length()).foldr(fr, self.plugboard.swap(letter))
+        right = range(0, self.rotors.length()).foldr(fr, self.plugboard.swap(letter))
         middle = from-reflector(right, self.reflector)
-        left = range(0, r.length()).foldl(fl, middle)
+        left = range(0, self.rotors.length()).foldl(fl, middle)
         self.plugboard.swap(left)
       end
     end,
@@ -309,12 +311,16 @@ end
 
 #################### Utilities ###################
 
+fun clean-list(string :: String) -> List<String>:
+  doc: 'return string list with only uppercase English letters'
+  for filter(letter from string-split-all(string-to-upper(string), '')):
+    ENGLISH-SET.member(letter)
+  end
+end
+
 fun clean(string :: String) -> String:
   doc: 'return string with only uppercase English letters'
-  for map(letter from string-split-all(string-to-upper(string), '')):
-    if string-index-of(ENGLISH, letter) < 0: '' else: letter end
-  end
-    .join-str('')
+  clean(string).join-str('')
 end
 
 fun step-rotors(rotors :: List<Rotor>, settings :: String) -> String:
@@ -430,6 +436,7 @@ fun invert-alphabet(alphabet):
   doc: 'return alphabet inverted'
   letters = string-split-all(ENGLISH, '')
   for map(letter from letters):
+    # TODO: use a dictionary to make this O(n)
     get-letter(string-index-of(alphabet, letter))
   end
     .join-str('')
@@ -451,7 +458,7 @@ where:
 end
 
 fun from-right(letter, rotor, setting, ring):
-  doc: 'return letter encoded by rotor set to shift and shifted'
+  doc: 'return letter encoded by rotor set to setting and shifted by ring'
   block:
     s = get-index(setting) - get-index(ring)
     l = caesar(letter, rotate-alphabet(rotor.alpha(), s))
@@ -476,7 +483,7 @@ where:
 end
 
 fun from-left(letter, rotor, setting, ring):
-  doc: ''
+  doc: 'return letter encoded by rotor set to setting and shifted by ring'
   block:
     s = get-index(setting) - get-index(ring)
     l = shift-letter(letter, s)
