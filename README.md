@@ -5,6 +5,7 @@ This is an exercise in [Pyret](http://pyret.org/) used to explore [functional pr
 ## What did I learn about [Pyret](http://pyret.org/)?
 
 - Using `example`s is a good technique for thinking through and prototyping a multifacted problem like `Enigma`.
+- I like the [`ask`](https://www.pyret.org/docs/latest/Expressions.html#%28part._s~3aask-expr%29) syntax better than `else if` because if most resembles [`cond`](https://docs.racket-lang.org/reference/if.html).
 - Using `data` types is a way to create variant constructors. It also means that the variants fill the namespace (*e.g.* the `Rotor` datatype includes `i`, `ii`, `iii`, `iv`, `v`, `vi`, `vii`, and `viii` variants).
 - I have been trying to resolve the `fun` versus `method` dichotomy. To that end, I had a good [discussion](https://groups.google.com/g/pyret-discuss/c/lmnJX0VWPZU) w/ [Ben Lerner](https://www.ccs.neu.edu/home/blerner/) *et al.* on the [pyret-discuss](https://groups.google.com/g/pyret-discuss/) Google group.
 - There are a lot of places where `string-split-all(string-to-upper(string), '')` is required. When is it optimal to convert to uppercase and why is there no `map(letter from 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'):`?
