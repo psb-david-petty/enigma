@@ -14,7 +14,7 @@ This is an exercise in [Pyret](http://pyret.org/) used to explore [functional pr
 
 ## What did I learn about the [Enigma Machine](https://www.cryptomuseum.com/crypto/enigma/)?
 
-- The Enigma emulators (linked below) were *extremely* helpful in debugging the behavior of this code.
+- The Enigma emulators &mdash; paper and on-line &mdash; linked below, were *extremely* helpful in debugging the behavior of this code.
 - The heart of the Enigma is as follows:
   - swap letter from the keyboard through the plugboard
   - transmit letter through the rotors from right to left
@@ -46,7 +46,9 @@ This is an exercise in [Pyret](http://pyret.org/) used to explore [functional pr
 | [https://www.pyret.org/docs/latest/Expressions.html](https://www.pyret.org/docs/latest/Expressions.html) | Pyret *Expressions* (tab open for reference) |
 | [https://www.pyret.org/docs/latest/lists.html](https://www.pyret.org/docs/latest/lists.html) | Pyret *`List`s* (tab open for reference) |
 | [https://www.pyret.org/docs/latest/strings.html](https://www.pyret.org/docs/latest/strings.html) | Pyret *`String`s* (tab open for reference) |
-| [https://cryptomuseum.com/crypto/enigma/working.htm](https://cryptomuseum.com/crypto/enigma/working.htm) | CryptoMuseum &mdash; *How does an Enigma machine work?* | 
+| [https://cryptomuseum.com/crypto/enigma/working.htm](https://cryptomuseum.com/crypto/enigma/working.htm) | CryptoMuseum &mdash; *How does an Enigma machine work?* |
+| [https://mckoss.com/posts/paper-enigma/](https://mckoss.com/posts/paper-enigma/) | The Paper Enigma |
+| [https://cyber.org/sites/default/files/2020-06/CYBER%20Enigma-Pringles.pdf](https://cyber.org/sites/default/files/2020-06/CYBER%20Enigma-Pringles.pdf) | Pringles&reg; Can Enigma |
 | [https://cryptii.com/pipes/enigma-machine](https://cryptii.com/pipes/enigma-machine) | Enigma Machine emulator |
 | [https://101computing.net/enigma-machine-emulator/](https://101computing.net/enigma-machine-emulator/) | Enigma Machine emulator |
 | [https://en.wikipedia.org/wiki/Enigma_rotor_details](https://en.wikipedia.org/wiki/Enigma_rotor_details) | Enigma Machine rotor details |
